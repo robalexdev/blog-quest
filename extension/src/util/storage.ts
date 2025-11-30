@@ -6,7 +6,7 @@ import {
   actionActive,
   actionInactive,
 } from "./constants";
-import { getProfiles } from "./getProfiles";
+import { getFeeds } from "./getFeeds";
 
 function storageFactory<T extends NotNullNotUndefined>(args: {
   parse(storageData: any): DeepReadonly<T>;
@@ -87,16 +87,11 @@ export const getIconState = storageFactory({
         path: path,
       });
     }
-
-    browserAction.setBadgeBackgroundColor({ color: "#9f99f5" });
-
-    const badgeText = curr.unreadCount ? `+${curr.unreadCount}` : "";
-    browserAction.setBadgeText({ text: badgeText });
   },
 });
 
 export const getHrefStore = storageFactory({
-  storageKey: "rel-me-href-data-store-3",
+  storageKey: "feed-href-data-store-3",
   parse(storageData) {
     let hrefStore: HrefStore;
     try {
@@ -110,39 +105,39 @@ export const getHrefStore = storageFactory({
     return Array.from(hrefStore.entries());
   },
   async onChange({ prev, curr }) {
-    const prevProfiles = getProfiles(prev);
-    const currProfiles = getProfiles(curr);
-    const profilesDiff = currProfiles.length - prevProfiles.length;
-    if (profilesDiff <= 0) {
+    const prevFeeds = getFeeds(prev);
+    const currFeeds = getFeeds(curr);
+    const feedsDiff = currFeeds.length - prevFeeds.length;
+    if (feedsDiff <= 0) {
       return;
     }
 
     {
-      const prevHiddenProfiles = getProfiles(prev, { hidden: true });
-      const currHiddenProfiles = getProfiles(curr, { hidden: true });
-      const hiddenProfilesDiff =
-        prevHiddenProfiles.length - currHiddenProfiles.length;
+      const prevHiddenFeeds = getFeeds(prev, { hidden: true });
+      const currHiddenFeeds = getFeeds(curr, { hidden: true });
+      const hiddenFeedsDiff =
+        prevHiddenFeeds.length - currHiddenFeeds.length;
 
       /**
-       * Early exit if we are just moving profiles from hidden to non hidden.
+       * Early exit if we are just moving feeds from hidden to non hidden.
        * This can def be figured out in a better way by figuring out the exact
-       * profiles that were added. This is just easier and prob won't break
+       * feeds that were added. This is just easier and prob won't break
        * anything.
        */
-      if (hiddenProfilesDiff === profilesDiff) {
+      if (hiddenFeedsDiff === feedsDiff) {
         return;
       }
     }
 
     getIconState((iconState) => ({
       state: "on",
-      unreadCount: (iconState.unreadCount ?? 0) + profilesDiff,
+      unreadCount: (iconState.unreadCount ?? 0) + feedsDiff,
     }));
   },
 });
 
-export const getProfileUrlScheme = storageFactory({
-  storageKey: "profile-url-scheme-1",
+export const getFeedUrlScheme = storageFactory({
+  storageKey: "feed-url-scheme-1",
   parse(storageData: string) {
     return storageData ?? "";
   },
@@ -151,8 +146,8 @@ export const getProfileUrlScheme = storageFactory({
   },
 });
 
-export const getHideProfilesOnClick = storageFactory({
-  storageKey: "hide-profiles-on-click-1",
+export const getHideFeedsOnClick = storageFactory({
+  storageKey: "hide-feeds-on-click-1",
   parse(storageData: boolean) {
     return storageData ?? false;
   },

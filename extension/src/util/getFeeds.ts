@@ -1,14 +1,14 @@
 import type { DeepReadonly } from "ts-essentials";
 import { HrefDataType, HrefStore } from "./constants";
 
-export function getProfiles(
+export function getFeeds(
   hrefStore: DeepReadonly<HrefStore>,
   options?: { hidden?: boolean },
-): Array<HrefDataType<"profile">> {
-  const profiles: Array<HrefDataType<"profile">> = [];
+): Array<HrefDataType<"feed">> {
+  const feeds: Array<HrefDataType<"feed">> = [];
 
   for (const hrefData of hrefStore.values()) {
-    if (hrefData.profileData.type !== "profile") {
+    if (hrefData.feedData.type !== "feed") {
       continue;
     }
 
@@ -16,11 +16,11 @@ export function getProfiles(
       continue;
     }
 
-    profiles.push({
+    feeds.push({
       ...hrefData,
-      profileData: hrefData.profileData,
+      feedData: hrefData.feedData,
     });
   }
 
-  return profiles.sort((a, b) => b.viewedAt - a.viewedAt);
+  return feeds.sort((a, b) => b.viewedAt - a.viewedAt);
 }

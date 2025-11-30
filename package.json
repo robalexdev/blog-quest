@@ -15,5 +15,8 @@
   ],
   "author": "",
   "license": "MIT",
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.0.2",
+  "dependencies": {
+    "yarn": "^1.22.22"
+  }
 }

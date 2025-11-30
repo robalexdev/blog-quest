@@ -10,24 +10,24 @@ import {
   Message,
   MessageReturn,
   PopupTab,
-  hideProfilesFormId,
+  hideFeedsFormId,
 } from "./util/constants";
 import { getDisplayHref } from "./util/getDisplayHref";
-import { exportProfiles } from "./util/exportProfiles";
+import { exportFeeds } from "./util/exportFeeds";
 import {
   getIconState,
   getHrefStore,
-  getProfileUrlScheme,
-  getHideProfilesOnClick,
+  getFeedUrlScheme,
+  getHideFeedsOnClick,
 } from "./util/storage";
 import { cx } from "class-variance-authority";
-import { getProfileUrl } from "./util/getProfileUrl";
+import { getFeedUrl } from "./util/getFeedUrl";
 import { downloadLink } from "../../constants";
 import { getHrefProps } from "./util/getHrefProps";
 import {
   useHrefStoreQuery,
-  useProfileUrlSchemeQuery,
-  useHideProfilesOnClickQuery,
+  useFeedUrlSchemeQuery,
+  useHideFeedsOnClickQuery,
 } from "./util/reactQuery";
 
 getIconState(() => {
@@ -45,12 +45,12 @@ const button = cx(
 const buttonCheckbox = cx("scale-[0.82]");
 
 function Popup() {
-  const [hideProfiles, setHideProfiles] = React.useState(false);
+  const [hideFeeds, setHideFeeds] = React.useState(false);
   const hrefStoreQuery = useHrefStoreQuery();
-  const profileUrlSchemeQuery = useProfileUrlSchemeQuery();
-  const hideProfilesOnClickQuery = useHideProfilesOnClickQuery();
+  const feedUrlSchemeQuery = useFeedUrlSchemeQuery();
+  const hideFeedsOnClickQuery = useHideFeedsOnClickQuery();
   const popoverCloseRef = React.useRef<HTMLButtonElement>(null);
-  const profileUrlSchemeInputRef = React.useRef<HTMLInputElement>(null);
+  const feedUrlSchemeInputRef = React.useRef<HTMLInputElement>(null);
 
   return (
     <div className="relative flex h-[600px] w-[350px] flex-col overflow-auto bg-primaryBg">
@@ -58,17 +58,17 @@ function Popup() {
         <img src="/icon-128.png" width="36" height="36" />
 
         <h1 className="text-14 font-medium leading-[1.21] text-primaryText">
-          StreetPass
+          Feed Collector
         </h1>
       </div>
 
       <div className="flex grow flex-col gap-[18px] px-12 py-[18px]">
-        <Profiles
-          hideProfiles={hideProfiles}
-          profiles={hrefStoreQuery.data?.profiles}
+        <Feeds
+          hideFeeds={hideFeeds}
+          feeds={hrefStoreQuery.data?.feeds}
         />
 
-        {!!hrefStoreQuery.data?.hiddenProfiles.length && (
+        {!!hrefStoreQuery.data?.hiddenFeeds.length && (
           <details
             className="peer mt-auto"
             tabIndex={
@@ -87,19 +87,19 @@ function Popup() {
             </summary>
 
             <div className="flex flex-col gap-[18px] pt-[18px]">
-              <Profiles
-                hideProfiles={hideProfiles}
-                profiles={hrefStoreQuery.data?.hiddenProfiles}
+              <Feeds
+                hideFeeds={hideFeeds}
+                feeds={hrefStoreQuery.data?.hiddenFeeds}
               />
             </div>
           </details>
         )}
 
-        {hrefStoreQuery.data?.profiles.length === 0 && (
+        {hrefStoreQuery.data?.feeds.length === 0 && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center peer-open:hidden">
             <p className="pointer-events-auto text-13 text-secondaryText">
-              No profiles
-              {hrefStoreQuery.data.hiddenProfiles.length === 0 && (
+              No feeds
+              {hrefStoreQuery.data.hiddenFeeds.length === 0 && (
                 <>
                   . Try{" "}
                   <a
@@ -118,10 +118,10 @@ function Popup() {
 
       <div
         className="absolute right-12 top-12 flex gap-8"
-        hidden={!hideProfiles}
+        hidden={!hideFeeds}
       >
         <form
-          id={hideProfilesFormId}
+          id={hideFeedsFormId}
           className="contents"
           onSubmit={async (ev) => {
             ev.preventDefault();
@@ -141,7 +141,7 @@ function Popup() {
               return hrefStore;
             });
 
-            setHideProfiles((prev) => !prev);
+            setHideFeeds((prev) => !prev);
             queryClient.refetchQueries();
           }}
         >
@@ -170,11 +170,11 @@ function Popup() {
 
       <div
         className="absolute right-12 top-12 flex gap-8"
-        hidden={hideProfiles}
+        hidden={hideFeeds}
       >
-        {!!hrefStoreQuery.data?.profiles.length && (
+        {!!hrefStoreQuery.data?.feeds.length && (
           <span className={cx(button, "text-accent")}>
-            {hrefStoreQuery.data?.profiles.length}
+            {hrefStoreQuery.data?.feeds.length}
           </span>
         )}
 
@@ -214,40 +214,40 @@ function Popup() {
                 >
                   <Tabs.List className="contents">
                     <Tabs.Trigger
-                      value={PopupTab.openProfilesWith}
+                      value={PopupTab.openFeedsWith}
                       className={cx(button, "text-accent")}
                     >
-                      Open Profiles With…
+                      Subscribe Using…
                     </Tabs.Trigger>
                   </Tabs.List>
 
                   <Popover.Close
                     className={cx(button, "text-accent")}
                     onClick={() => {
-                      setHideProfiles((prev) => !prev);
+                      setHideFeeds((prev) => !prev);
                     }}
                   >
-                    Hide Profiles…
+                    Hide Feeds…
                   </Popover.Close>
 
                   <label className={cx(button, "text-accent")}>
-                    Hide Profiles On Click&nbsp;
+                    Hide Feeds On Click&nbsp;
                     <input
                       type="checkbox"
-                      defaultChecked={hideProfilesOnClickQuery.data}
+                      defaultChecked={hideFeedsOnClickQuery.data}
                       className={buttonCheckbox}
                       onChange={async (ev) => {
-                        await getHideProfilesOnClick(() => ev.target.checked);
+                        await getHideFeedsOnClick(() => ev.target.checked);
                         queryClient.refetchQueries();
                       }}
                     />
                   </label>
 
                   <Popover.Close
-                    onClick={exportProfiles}
+                    onClick={exportFeeds}
                     className={cx(button, "text-accent")}
                   >
-                    Export (.json)
+                    Export (.opml)
                   </Popover.Close>
 
                   <ConfirmButton
@@ -271,20 +271,20 @@ function Popup() {
                     className={cx(button, "text-accent")}
                     {...getHrefProps(downloadLink[__TARGET__])}
                   >
-                    Rate StreetPass
+                    Rate Feed Collector
                   </a>
                 </Tabs.Content>
 
                 <Tabs.Content
-                  value={PopupTab.openProfilesWith}
+                  value={PopupTab.openFeedsWith}
                   className="flex w-[275px] flex-col gap-y-8 pt-8"
                 >
                   <form
                     className="contents"
                     onSubmit={async (ev) => {
                       ev.preventDefault();
-                      await getProfileUrlScheme(
-                        () => profileUrlSchemeInputRef.current?.value.trim(),
+                      await getFeedUrlScheme(
+                        () => feedUrlSchemeInputRef.current?.value.trim(),
                       );
                       queryClient.refetchQueries();
                       popoverCloseRef.current?.click();
@@ -292,18 +292,18 @@ function Popup() {
                   >
                     <label className="contents">
                       <span className="px-8 text-12 text-secondaryText">
-                        URL to open profiles with. Set as empty for default
+                        URL to open feeds with. Set as empty for default
                         behavior.
                       </span>
 
                       <input
                         spellCheck={false}
                         type="text"
-                        placeholder="https://mastodon.example/@{account}"
+                        placeholder="https://example.com/?subscribe={feedUrl}"
                         className="mx-8 rounded-6 border border-primaryBorder bg-secondaryBg px-6 py-2 text-12 text-primaryText placeholder:text-[--gray-a10]"
-                        ref={profileUrlSchemeInputRef}
-                        defaultValue={profileUrlSchemeQuery.data}
-                        key={profileUrlSchemeQuery.data}
+                        ref={feedUrlSchemeInputRef}
+                        defaultValue={feedUrlSchemeQuery.data}
+                        key={feedUrlSchemeQuery.data}
                       />
                     </label>
 
@@ -314,13 +314,12 @@ function Popup() {
                     <div className="flex flex-wrap gap-8 px-8">
                       {(
                         [
-                          "elk",
-                          "icecubes",
-                          "ivory",
-                          "mastodon.online",
-                          "mastodon.social",
-                          "mona",
-                          "phanpy",
+                          "feedly",
+                          "feedland.com",
+                          "feedland.org",
+                          "inoreader",
+                          "debug",
+                          "download",
                         ] as const
                       ).map((item) => {
                         return (
@@ -329,38 +328,30 @@ function Popup() {
                               type="button"
                               className={cx(button, "text-accent")}
                               onClick={() => {
-                                if (!profileUrlSchemeInputRef.current) {
+                                if (!feedUrlSchemeInputRef.current) {
                                   return;
                                 }
 
-                                profileUrlSchemeInputRef.current.value = {
-                                  /**
-                                   * https://tapbots.com/support/ivory/tips/urlschemes
-                                   */
-                                  ivory: "ivory://acct/user_profile/{account}",
-                                  elk: "https://elk.zone/@{account}",
-                                  icecubes:
-                                    "icecubesapp:{profileUrl.noProtocol}",
-                                  "mastodon.social":
-                                    "https://mastodon.social/@{account}",
-                                  "mastodon.online":
-                                    "https://mastodon.online/@{account}",
-                                  mona: "mona:{profileUrl.noProtocol}",
-                                  phanpy: `https://phanpy.social/#/https:{profileUrl.noProtocol}`,
+                                feedUrlSchemeInputRef.current.value = {
+                                  feedly: "https://feedly.com/i/discover?query=suggesto%2F{feedUrl}",
+                                  "feedland.com": "https://feedland.com/?feedurl={feedUrl}",
+                                  "feedland.org": "https://feedland.org/?feedurl={feedUrl}",
+                                  inoreader: "https://www.inoreader.com/search/feeds/{feedUrl}",
+                                  debug: "http://localhost:8080/#{feedUrl}",
+                                  download: "",
                                 }[item];
 
-                                profileUrlSchemeInputRef.current.focus();
+                                feedUrlSchemeInputRef.current.focus();
                               }}
                             >
                               {
                                 {
-                                  ivory: "Ivory",
-                                  elk: "Elk",
-                                  icecubes: "Ice Cubes",
-                                  "mastodon.social": "mastodon.social",
-                                  "mastodon.online": "mastodon.online",
-                                  mona: "Mona",
-                                  phanpy: "Phanpy",
+                                  feedly: "Feedly",
+                                  "feedland.com": "Feedland.com",
+                                  "feedland.org": "Feedland.org",
+                                  inoreader: "Inoreader",
+                                  debug: "Debug",
+                                  download: "Download",
                                 }[item]
                               }
                             </button>
@@ -373,12 +364,12 @@ function Popup() {
                       <button
                         type="button"
                         onClick={() => {
-                          if (!profileUrlSchemeInputRef.current) {
+                          if (!feedUrlSchemeInputRef.current) {
                             return;
                           }
 
-                          profileUrlSchemeInputRef.current.value = "";
-                          profileUrlSchemeInputRef.current.focus();
+                          feedUrlSchemeInputRef.current.value = "";
+                          feedUrlSchemeInputRef.current.focus();
                         }}
                         className={cx(button, "text-secondaryText")}
                       >
@@ -428,28 +419,28 @@ function ConfirmButton(
   );
 }
 
-function Profiles(props: {
-  profiles: Array<HrefDataType<"profile">> | undefined;
-  hideProfiles: boolean;
+function Feeds(props: {
+  feeds: Array<HrefDataType<"feed">> | undefined;
+  hideFeeds: boolean;
 }) {
-  return props.profiles?.map((hrefData, index, arr) => {
+  return props.feeds?.map((hrefData, index, arr) => {
     const prevHrefData = arr[index - 1];
     const prevHrefDate = prevHrefData
       ? new Date(prevHrefData.viewedAt).getDate()
       : new Date().getDate();
     const previousItemWasDayBefore =
       prevHrefDate !== new Date(hrefData.viewedAt).getDate();
-    const profileHrefProps = getHrefProps(
-      hrefData.profileData.profileUrl,
+    const feedHrefProps = getHrefProps(
+      hrefData.feedData.feedUrl,
       async () => {
-        const [profileUrlScheme, hideProfilesOnClick] = await Promise.all([
-          queryClient.fetchQuery(useProfileUrlSchemeQuery.getFetchOptions()),
-          queryClient.fetchQuery(useHideProfilesOnClickQuery.getFetchOptions()),
+        const [feedUrlScheme, hideFeedsOnClick] = await Promise.all([
+          queryClient.fetchQuery(useFeedUrlSchemeQuery.getFetchOptions()),
+          queryClient.fetchQuery(useHideFeedsOnClickQuery.getFetchOptions()),
         ]);
 
-        if (hideProfilesOnClick) {
+        if (hideFeedsOnClick) {
           await getHrefStore((prev) =>
-            new Map(prev).set(hrefData.relMeHref, {
+            new Map(prev).set(hrefData.feedHref, {
               ...hrefData,
               hidden: true,
             }),
@@ -458,15 +449,15 @@ function Profiles(props: {
           queryClient.refetchQueries();
         }
 
-        return getProfileUrl(hrefData.profileData, profileUrlScheme);
+        return getFeedUrl(hrefData.feedData, feedUrlScheme);
       },
     );
-    const profileDisplayName = hrefData.profileData.account
-      ? `@${hrefData.profileData.account}`
-      : getDisplayHref(hrefData.profileData.profileUrl);
+    const feedDisplayName = hrefData.feedData.feedTitle
+      ? `${hrefData.feedData.feedTitle}`
+      : getDisplayHref(hrefData.feedData.feedUrl);
 
     return (
-      <React.Fragment key={`${index}.${hrefData.relMeHref}`}>
+      <React.Fragment key={`${index}.${hrefData.feedHref}`}>
         {previousItemWasDayBefore && (
           <p className="shrink-0 text-13 text-secondaryText">
             {new Intl.DateTimeFormat(undefined, {
@@ -479,42 +470,17 @@ function Profiles(props: {
         <InView
           as="div"
           className="flex items-start"
-          triggerOnce
-          onChange={async (inView) => {
-            if (!inView) {
-              return;
-            }
-
-            try {
-              const message: Message = {
-                name: "FETCH_PROFILE_UPDATE",
-                args: {
-                  relMeHref: hrefData.relMeHref,
-                },
-              };
-              const resp = await MessageReturn.FETCH_PROFILE_UPDATE.parse(
-                browser.runtime.sendMessage(message),
-              );
-              if (!resp) {
-                return;
-              }
-
-              queryClient.refetchQueries();
-            } catch (err) {
-              console.error(err);
-            }
-          }}
         >
           <a
-            {...profileHrefProps}
+            {...feedHrefProps}
             className="flex shrink-0 pr-[7px] pt-[4px]"
-            title={profileDisplayName}
+            title={feedDisplayName}
           >
             <div className="relative flex size-[19px] shrink-0 overflow-hidden rounded-full">
-              {hrefData.profileData.avatar ? (
+              {hrefData.feedData.favicon ? (
                 <>
                   <img
-                    src={hrefData.profileData.avatar}
+                    src={hrefData.feedData.favicon}
                     width={19}
                     height={19}
                     className="object-cover"
@@ -527,7 +493,8 @@ function Profiles(props: {
               ) : (
                 <div className="flex w-full items-center justify-center bg-faded text-accent">
                   <svg
-                    viewBox="0 0 40 37"
+                    width="40" height="40" 
+                    viewBox="0 0 256 256"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-[12px]"
@@ -541,14 +508,14 @@ function Profiles(props: {
           <div className="flex min-w-0 grow flex-col">
             <div className="flex items-baseline justify-between gap-x-6 leading-[1.45]">
               <a
-                {...profileHrefProps}
+                {...feedHrefProps}
                 className="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-medium text-accent"
-                title={profileDisplayName}
+                title={feedDisplayName}
               >
-                {profileDisplayName}
+                {feedDisplayName}
               </a>
 
-              {!props.hideProfiles && (
+              {!props.hideFeeds && (
                 <span className="shrink-0 text-[12px] text-secondaryText">
                   {new Intl.DateTimeFormat(undefined, {
                     timeStyle: "short",
@@ -568,12 +535,12 @@ function Profiles(props: {
             </a>
           </div>
 
-          {props.hideProfiles && (
+          {props.hideFeeds && (
             <label className={cx(button, "ml-8 text-accent")}>
               Hide&nbsp;
               <input
-                name={hrefData.relMeHref}
-                form={hideProfilesFormId}
+                name={hrefData.feedHref}
+                form={hideFeedsFormId}
                 type="checkbox"
                 defaultChecked={hrefData.hidden}
                 className={buttonCheckbox}
@@ -588,24 +555,7 @@ function Profiles(props: {
 
 const nullIconJsx = (
   <>
-    <rect
-      x="2"
-      y="2"
-      width="36"
-      height="33"
-      rx="3"
-      stroke="currentColor"
-      strokeWidth="4"
-    />
-    <rect x="12" y="10" width="4" height="8" rx="2" fill="currentColor" />
-    <rect x="24" y="10" width="4" height="8" rx="2" fill="currentColor" />
-    <path
-      d="M13 24.5V24.5C16.7854 28.5558 23.2146 28.5558 27 24.5V24.5"
-      stroke="currentColor"
-      strokeWidth="4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
+	<path d="M 2 25.955 L 2 50.909 5.250 51.373 C 7.038 51.629, 14.125 52.332, 21 52.936 C 84.261 58.497, 142.337 95.734, 176.523 152.652 C 190.729 176.305, 201.348 208.766, 203.460 235 C 203.793 239.125, 204.311 245.313, 204.612 248.750 L 205.159 255 230.235 255 L 255.310 255 254.659 241.750 C 252.131 190.296, 232.676 138.977, 199.960 97.465 C 167.325 56.054, 115.406 22.193, 65.195 9.570 C 46.492 4.868, 20.606 1.081, 6.750 1.021 L 2 1 2 25.955 M 2 113.349 L 2 139 8.750 139.022 C 16.594 139.047, 29.317 141.692, 40 145.518 C 73.506 157.520, 100.765 185.199, 111.903 218.527 C 115.055 227.959, 117.989 243.478, 117.996 250.750 L 118 255 143.604 255 L 169.208 255 168.545 246.750 C 165.377 207.321, 150.714 172.240, 125.598 144 C 107.218 123.334, 82.287 106.698, 55.967 97.537 C 43.256 93.112, 24.146 89.153, 11.488 88.322 L 2 87.698 2 113.349 M 24.763 188.456 C 18.828 190.728, 12.186 195.775, 8.475 200.833 C 3.385 207.768, 1.673 213.790, 2.200 222.899 C 3.967 253.414, 40.693 265.900, 61.368 243.014 C 67.479 236.250, 69.429 230.926, 69.429 221 C 69.429 210.663, 67.377 205.456, 60.341 197.933 C 53.263 190.366, 47.426 187.716, 37 187.335 C 31.348 187.129, 27.248 187.504, 24.763 188.456" stroke="none" fill="#ff8000" fill-rule="evenodd"/>
   </>
 );
 

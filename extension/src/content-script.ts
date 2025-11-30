@@ -26,23 +26,61 @@ function getCurrentUrlSanitized() {
 let currentUrlSanitized = getCurrentUrlSanitized();
 const hrefs: Set<string> = new Set();
 
-function sendHrefs() {
-  const elements = document.querySelectorAll(":is(link, a)[rel~=me]");
-
-  for (const element of elements) {
-    const href = element.getAttribute("href");
-    if (href && !hrefs.has(href)) {
-      hrefs.add(href);
-
-      const message: Message = {
-        name: "HREF_PAYLOAD",
-        args: {
-          tabUrl: currentUrlSanitized,
-          relMeHref: href,
-        },
-      };
-      browser.runtime.sendMessage(message);
+// Normalize and make absolute
+function normalizeHref(url) {
+  if (url) {
+    try {
+      return (new URL(url, document.baseURI)).href;
+    } catch (err) {
     }
+  }
+  return '';
+}
+
+function processFeed(feed, iconHref) {
+  let feedHref = normalizeHref(feed.getAttribute("href"));
+
+  if (feedHref && !hrefs.has(feedHref)) {
+    hrefs.add(feedHref);
+    let feedTitle = feed.getAttribute('title');
+    if (! feedTitle) {
+      // Fallback: use the page title
+      feedTitle = document.title;
+    }
+
+    const message: Message = {
+      name: "HREF_PAYLOAD",
+      args: {
+        faviconHref: iconHref,
+        feedHref: feedHref,
+        feedTitle: feedTitle,
+        tabUrl: currentUrlSanitized,
+      },
+    };
+    browser.runtime.sendMessage(message);
+    console.log('RSS content script');
+    console.log(message);
+  }
+}
+
+function sendHrefs() {
+  // Find the best icon for the site
+  const icons = document.querySelectorAll(":is(link)[href][rel~='icon']");
+  let iconHref = '';
+  if (icons.length > 0) {
+      iconHref = normalizeHref(icons[0].getAttribute("href"));
+  }
+
+  // Process RSS feeds
+  let feeds = document.querySelectorAll(":is(link)[href][type~='application/rss+xml'][rel~='alternate']");
+  for (const feed of feeds) {
+    processFeed(feed, iconHref);
+  }
+
+  // Process Atom feeds
+  feeds = document.querySelectorAll(":is(link)[href][type~='application/atom+xml'][rel~='alternate']");
+  for (const feed of feeds) {
+    processFeed(feed, iconHref);
   }
 }
 

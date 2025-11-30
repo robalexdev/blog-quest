@@ -1,28 +1,28 @@
 import { createQuery } from "react-query-kit";
 import {
-  getHideProfilesOnClick,
+  getHideFeedsOnClick,
   getHrefStore,
-  getProfileUrlScheme,
+  getFeedUrlScheme,
 } from "./storage";
-import { getProfiles } from "./getProfiles";
+import { getFeeds } from "./getFeeds";
 
 export const useHrefStoreQuery = createQuery({
-  queryKey: ["profiles"],
+  queryKey: ["feeds"],
   async fetcher() {
     const hrefStore = await getHrefStore();
     return {
-      profiles: getProfiles(hrefStore),
-      hiddenProfiles: getProfiles(hrefStore, { hidden: true }),
+      feeds: getFeeds(hrefStore),
+      hiddenFeeds: getFeeds(hrefStore, { hidden: true }),
     };
   },
 });
 
-export const useProfileUrlSchemeQuery = createQuery({
-  queryKey: ["profileurlscheme"],
-  fetcher: () => getProfileUrlScheme(),
+export const useFeedUrlSchemeQuery = createQuery({
+  queryKey: ["feedurlscheme"],
+  fetcher: () => getFeedUrlScheme(),
 });
 
-export const useHideProfilesOnClickQuery = createQuery({
-  queryKey: ["hideprofilesonclick"],
-  fetcher: () => getHideProfilesOnClick(),
+export const useHideFeedsOnClickQuery = createQuery({
+  queryKey: ["hidefeedsonclick"],
+  fetcher: () => getHideFeedsOnClick(),
 });

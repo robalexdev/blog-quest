@@ -11,3 +11,5 @@ node_modules
 src.pem
 src.crx
 src.zip
+*.swp
+TODO

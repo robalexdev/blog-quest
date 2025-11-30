@@ -1,6 +1,7 @@
 export const VERSION = "2024.1"
 
 export const downloadLink = {
+  // TODO fix these
   chrome:
     "https://chrome.google.com/webstore/detail/streetpass-for-mastodon/fphjfedjhinpnjblomfebcjjpdpakhhn",
   firefox:

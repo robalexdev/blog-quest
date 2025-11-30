@@ -2,11 +2,10 @@ import { z } from "zod";
 import {
   Message,
   MessageReturn,
-  Profile,
-  timeToExpireNotProfile,
-  timeToUpdateProfile,
+  Feed,
 } from "./constants";
-import { getUncachedProfileData } from "./getUncachedProfileData";
+import { getUncachedFeedData } from "./getUncachedFeedData";
+import { getIsUrlHttpOrHttps } from "./getIsUrlHttpOrHttps";
 import { getHrefStore } from "./storage";
 
 type ArgMap = {
@@ -17,102 +16,48 @@ export const messageCallbacks: {
   [K in keyof ArgMap]: (value: ArgMap[K]) => z.infer<(typeof MessageReturn)[K]>;
 } = {
   async HREF_PAYLOAD(args) {
+    if (!getIsUrlHttpOrHttps(args.feedHref)) {
+      return;
+    }
+
     const hasExistingHrefData = (
       await getHrefStore((prev) => {
         const hrefStore = new Map(prev);
-        for (const [key, hrefData] of hrefStore) {
-          if (
-            hrefData.profileData.type === "notProfile" &&
-            hrefData.viewedAt + timeToExpireNotProfile < Date.now()
-          ) {
-            hrefStore.delete(key);
-          }
-        }
-
+        // streetpass would expire known non-profiles here
+        // but we don't fetch the feed, so there's nothing to expire
         return hrefStore;
       })
-    ).has(args.relMeHref);
+    ).has(args.feedHref);
 
     if (hasExistingHrefData) {
       return;
     }
 
-    const profileData = await getUncachedProfileData(args.relMeHref);
+    //
+    // Unlike Mastodon and Webfinger we can't reliably fetch RSS feed content in an extension
+    // CORS can reject it
+    // Instead rely on the information in the rel=alternate link
+    //
+
+    const feedData = {
+      type: "feed",
+      feedTitle: args.feedTitle,
+      feedUrl: args.feedHref,
+      // tabUrl too?
+      favicon: args.faviconHref,
+    };
 
     await getHrefStore((hrefStore) => {
       const newHrefStore = new Map(hrefStore);
-      newHrefStore.set(args.relMeHref, {
-        profileData: profileData,
+      newHrefStore.set(args.feedHref, {
+        feedData: feedData,
         viewedAt: Date.now(),
         websiteUrl: args.tabUrl,
-        relMeHref: args.relMeHref,
+        feedHref: args.feedHref,
       });
 
       return newHrefStore;
     });
-  },
-  /**
-   * Update a profile with uncached data. Returns true if updated.
-   * Will not add a new profile, only update an existing one.
-   */
-  async FETCH_PROFILE_UPDATE(args) {
-    // console.log("FETCH_PROFILE_UPDATE", args.relMeHref);
-
-    /**
-     * Exit if relMeHref isn't a valid url
-     */
-    try {
-      new URL(args.relMeHref);
-    } catch (err) {
-      return false;
-    }
-
-    /**
-     * Exit if not already in hrefStore
-     */
-    const existingHrefData = (await getHrefStore()).get(args.relMeHref);
-    if (!existingHrefData) {
-      // console.log("not profile type");
-      return false;
-    }
-
-    /**
-     * Exit if has been updated recently
-     */
-    {
-      const lastDate = existingHrefData.updatedAt ?? existingHrefData.viewedAt;
-      if (lastDate + timeToUpdateProfile > Date.now()) {
-        // console.log("has been updated recently", args.relMeHref);
-        return false;
-      }
-    }
-
-    const uncachedProfileData = await getUncachedProfileData(args.relMeHref);
-
-    const shouldUpdateProfile =
-      uncachedProfileData.type === "profile" &&
-      Profile.keyof().options.some(
-        (key) =>
-          existingHrefData.profileData.type === "profile" &&
-          existingHrefData.profileData[key] !== uncachedProfileData[key],
-      );
-
-    await getHrefStore((hrefStore) => {
-      return new Map(hrefStore).set(args.relMeHref, {
-        ...existingHrefData,
-        updatedAt: Date.now(),
-        profileData: shouldUpdateProfile
-          ? uncachedProfileData
-          : existingHrefData.profileData,
-      });
-    });
-
-    // console.log({
-    //   shouldUpdateProfile,
-    //   existingHrefData,
-    //   uncachedProfileData,
-    // });
-    return shouldUpdateProfile;
   },
 };
 

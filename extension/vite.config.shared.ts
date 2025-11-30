@@ -31,7 +31,7 @@ export function getConfig(
     return args[target];
   }
 
-  const extensionName = `StreetPass for Mastodon${
+  const extensionName = `Feed Collector${
     config.mode === "dev"
       ? ` ${new Intl.DateTimeFormat(undefined, {
           month: "short",
@@ -55,8 +55,8 @@ export function getConfig(
             manifest_version: targets({ chrome: 3, firefox: 2, safari: 3 }),
             name: extensionName,
             version: VERSION,
-            description: "Find your people on Mastodon",
-            homepage_url: "https://streetpass.social/",
+            description: "Collect Blogs and RSS feeds as you browse",
+            homepage_url: "https://alexsci.com/TODO",
             permissions: ["storage"],
             content_scripts: [
               {
@@ -81,7 +81,7 @@ export function getConfig(
             ...(() => {
               const action: Manifest.ActionManifest = {
                 default_popup: "src/popup.html",
-                default_title: "StreetPass",
+                default_title: "Feed Collector",
                 default_icon: targets<Record<string, string>>({
                   chrome: actionInactive,
                   firefox: actionInactive,
@@ -119,7 +119,7 @@ export function getConfig(
           if (target === "firefox") {
             manifest.browser_specific_settings = {
               gecko: {
-                id: "streetpass@streetpass.social",
+                id: "{324e7b43-b1fa-4f06-ad05-cd4b3e6b6249}",
               },
             };
           }
