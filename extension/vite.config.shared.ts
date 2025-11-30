@@ -31,7 +31,7 @@ export function getConfig(
     return args[target];
   }
 
-  const extensionName = `Feed Collector${
+  const extensionName = `Blog Quest${
     config.mode === "dev"
       ? ` ${new Intl.DateTimeFormat(undefined, {
           month: "short",
@@ -56,7 +56,7 @@ export function getConfig(
             name: extensionName,
             version: VERSION,
             description: "Collect Blogs and RSS feeds as you browse",
-            homepage_url: "https://alexsci.com/TODO",
+            homepage_url: "https://github.com/robalexdev/blog-quest",
             permissions: ["storage"],
             content_scripts: [
               {
@@ -81,7 +81,7 @@ export function getConfig(
             ...(() => {
               const action: Manifest.ActionManifest = {
                 default_popup: "src/popup.html",
-                default_title: "Feed Collector",
+                default_title: "Blog Quest",
                 default_icon: targets<Record<string, string>>({
                   chrome: actionInactive,
                   firefox: actionInactive,

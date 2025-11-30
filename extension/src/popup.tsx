@@ -58,7 +58,7 @@ function Popup() {
         <img src="/icon-128.png" width="36" height="36" />
 
         <h1 className="text-14 font-medium leading-[1.21] text-primaryText">
-          Feed Collector
+          Blog Quest
         </h1>
       </div>
 
@@ -103,7 +103,7 @@ function Popup() {
                 <>
                   . Try{" "}
                   <a
-                    {...getHrefProps("https://streetpass.social")}
+                    {...getHrefProps("https://alexsci.com/blog/")}
                     className="font-medium text-accent"
                   >
                     this
@@ -271,7 +271,7 @@ function Popup() {
                     className={cx(button, "text-accent")}
                     {...getHrefProps(downloadLink[__TARGET__])}
                   >
-                    Rate Feed Collector
+                    Rate Blog Quest
                   </a>
                 </Tabs.Content>
 

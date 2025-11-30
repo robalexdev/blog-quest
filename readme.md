@@ -1,22 +1,22 @@
-[Download for Chrome](https://chrome.google.com/webstore/detail/streetpass-for-mastodon/fphjfedjhinpnjblomfebcjjpdpakhhn)
+[Download for Chrome](https://chrome.google.com/webstore/detail/TODO)
 
-[Download for Firefox](https://addons.mozilla.org/en-US/firefox/addon/streetpass-for-mastodon/)
+[Download for Firefox](https://addons.mozilla.org/en-US/firefox/addon/TODO/)
 
-# Feed Quest
+# Blog Quest
 
-Feed Quest is a browser extension that helps you collect RSS and Atom feeds as you browse. Here's how it works:
+Blog Quest is a browser extension that helps you collect RSS and Atom feeds as you browse. Here's how it works:
 
 1. Blogs link to their RSS feeds using [`rel="alternate"` links](https://www.rssboard.org/rss-autodiscovery#element-link)
-2. Feed Quest quietly collects these feed URLs as you browse
-3. Browse the web as usual. Feed Quest will build a collection of blogs as you go.
+2. Blog Quest quietly collects these feed URLs as you browse
+3. Browse the web as usual. Blog Quest will build a collection of blogs as you go.
 
 
 ## Features
 
-Once installed Feed Quest will collect RSS and Atom feeds from each page you visit.
+Once installed Blog Quest will collect RSS and Atom feeds from each page you visit.
 Click on the extension to open the pop-up, which shows the list of collected feeds.
 
-At the top right you can open the `...` menu to customize Feed Quest.
+At the top right you can open the `...` menu to customize Blog Quest.
 
 ### OPML export
 
@@ -38,7 +38,7 @@ Consider sharing your URL template, I'll add it as a new preset.
 
 ## Calm tech features
 
-Feed Quest doesn't compete for your attention.
+Blog Quest doesn't compete for your attention.
 The extension quietly collects feeds, allowing you to explore them when you are ready.
 
 

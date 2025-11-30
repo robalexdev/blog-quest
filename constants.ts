@@ -1,11 +1,10 @@
-export const VERSION = "2024.1"
+export const VERSION = "2025.11"
 
 export const downloadLink = {
-  // TODO fix these
   chrome:
-    "https://chrome.google.com/webstore/detail/streetpass-for-mastodon/fphjfedjhinpnjblomfebcjjpdpakhhn",
+    "https://chrome.google.com/webstore/detail/TODO",
   firefox:
-    "https://addons.mozilla.org/en-US/firefox/addon/streetpass-for-mastodon/",
+    "https://addons.mozilla.org/en-US/firefox/addon/TODO/",
   safari:
-    "https://apps.apple.com/us/app/streetpass-for-mastodon/id6446224821",
+    "https://apps.apple.com/us/app/TODO",
 } as const

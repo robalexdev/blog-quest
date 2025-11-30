@@ -12,17 +12,17 @@ Repeate these steps on each supported browser.
 * Select the `dist-firefox` directory
 
 
+## Chrome setup
+
+TODO
+
+
 ## Feed reader quirks
 
 You'll need an account with Inoreader, otherwise you'll see the login page.
 The others show a helpful page when logged out.
 
 FeedLand shows an error if it hasn't loaded the feed yet.
-
-
-## Chrome setup
-
-TODO
 
 
 # Test steps

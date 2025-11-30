@@ -25,11 +25,11 @@ export async function exportFeeds(): Promise<void> {
 
   let xmlHeadTitle = xmlDoc.createElement("title");
   xmlHead.appendChild(xmlHeadTitle);
-  xmlHeadTitle.appendChild(xmlDoc.createTextNode("Exported from Blog Collector"));
+  xmlHeadTitle.appendChild(xmlDoc.createTextNode("Exported from Blog Quest"));
 
   let xmlHeadDescription = xmlDoc.createElement("description");
   xmlHead.appendChild(xmlHeadDescription);
-  xmlHeadDescription.appendChild(xmlDoc.createTextNode("These feeds were collected by the Blog Collector browser extension"));
+  xmlHeadDescription.appendChild(xmlDoc.createTextNode("These feeds were collected by the Blog Quest browser extension"));
 
   let xmlBody = xmlDoc.createElement("body");
   xmlDoc.children[0].appendChild(xmlBody);
