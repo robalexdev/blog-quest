@@ -120,6 +120,9 @@ export function getConfig(
             manifest.browser_specific_settings = {
               gecko: {
                 id: "{324e7b43-b1fa-4f06-ad05-cd4b3e6b6249}",
+                "data_collection_permissions": {
+                  "required": ["none"]
+                },
               },
             };
           }
