@@ -11,6 +11,9 @@ Blog Quest is a browser extension that helps you collect RSS and Atom feeds as y
 3. Browse the web as usual. Blog Quest will build a collection of blogs as you go.
 
 
+![Screenshot of Blog Quest pop-up showing list of discovered feeds](assets/blog-quest-screenshot.png)
+
+
 ## Features
 
 Once installed Blog Quest will collect RSS and Atom feeds from each page you visit.
