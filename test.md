@@ -14,7 +14,10 @@ Repeate these steps on each supported browser.
 
 ## Chrome setup
 
-TODO
+* Open `chrome://extensions`
+* Enable developer mode
+* Click load unpacked extension
+* Select the `dist-chrome` directory
 
 
 ## Feed reader quirks
