@@ -2,7 +2,7 @@ export const VERSION = "2025.11"
 
 export const downloadLink = {
   chrome:
-    "https://chrome.google.com/webstore/detail/TODO",
+    "https://chromewebstore.google.com/detail/blog-quest/ghmfhadmoephkndjiahchiobgclmkkpi",
   firefox:
     "https://addons.mozilla.org/en-US/firefox/addon/TODO/",
   safari:

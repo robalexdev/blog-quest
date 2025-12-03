@@ -1,4 +1,4 @@
-[Download for Chrome](https://chrome.google.com/webstore/detail/TODO)
+[Download for Chrome](https://chromewebstore.google.com/detail/blog-quest/ghmfhadmoephkndjiahchiobgclmkkpi)
 
 [Download for Firefox](https://addons.mozilla.org/en-US/firefox/addon/TODO/)
 
