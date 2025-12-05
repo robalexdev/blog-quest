@@ -64,3 +64,12 @@ This project builds on the wonderful [StreetPass for Mastodon](https://github.co
 
 Consistent with the StreetPass license, this project is open-source under the MIT license.
 
+
+## Privacy commitments
+
+**Nothing leaves your device**
+
+Blog Quest runs entirely in your browser and will never collect analytics.
+This means that Blog Quest doesn't require any sort of server being up-and-running for you to use it.
+Once installed, it's yours forever.
+
