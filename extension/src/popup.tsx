@@ -53,7 +53,7 @@ function Popup() {
   const profileUrlSchemeInputRef = React.useRef<HTMLInputElement>(null);
 
   return (
-    <div className="relative flex h-[600px] w-[350px] flex-col overflow-auto bg-primaryBg">
+    <div className="relative flex h-screen w-screen sm:h-[600px] sm:w-[350px] flex-col overflow-auto bg-primaryBg">
       <div className="flex flex-col items-center pt-[12px]">
         <img src="/icon-128.png" width="36" height="36" />
 

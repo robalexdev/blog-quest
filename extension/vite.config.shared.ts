@@ -120,7 +120,11 @@ export function getConfig(
             manifest.browser_specific_settings = {
               gecko: {
                 id: "streetpass@streetpass.social",
+                "data_collection_permissions": {
+                  "required": ["none"],
+                },
               },
+              gecko_android: {},
             };
           }
           if (target === "safari") {
