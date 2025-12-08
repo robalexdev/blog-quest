@@ -124,6 +124,7 @@ export function getConfig(
                   "required": ["none"]
                 },
               },
+              gecko_android: {},
             };
           }
           if (target === "safari") {
