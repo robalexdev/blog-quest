@@ -317,7 +317,9 @@ function Popup() {
                           "feedly",
                           "feedland.com",
                           "feedland.org",
+                          "feedmail",
                           "inoreader",
+
                           "debug",
                           "download",
                         ] as const
@@ -336,6 +338,7 @@ function Popup() {
                                   feedly: "https://feedly.com/i/discover?query=suggesto%2F{feedUrl}",
                                   "feedland.com": "https://feedland.com/?feedurl={feedUrl}",
                                   "feedland.org": "https://feedland.org/?feedurl={feedUrl}",
+                                  "feedmail": "https://feedmail.org/subscriptions/new?url={feedUrl}",
                                   inoreader: "https://www.inoreader.com/search/feeds/{feedUrl}",
                                   debug: "http://localhost:8080/#{feedUrl}",
                                   download: "",
@@ -349,6 +352,7 @@ function Popup() {
                                   feedly: "Feedly",
                                   "feedland.com": "Feedland.com",
                                   "feedland.org": "Feedland.org",
+                                  "feedmail": "FeedMail",
                                   inoreader: "Inoreader",
                                   debug: "Debug",
                                   download: "Download",
