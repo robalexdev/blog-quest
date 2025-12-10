@@ -319,7 +319,7 @@ function Popup() {
                           "feedland.org",
                           "feedmail",
                           "inoreader",
-
+                          "feedhandler",
                           "debug",
                           "download",
                         ] as const
@@ -341,6 +341,7 @@ function Popup() {
                                   "feedmail": "https://feedmail.org/subscriptions/new?url={feedUrl}",
                                   inoreader: "https://www.inoreader.com/search/feeds/{feedUrl}",
                                   debug: "http://localhost:8080/#{feedUrl}",
+                                  feedhandler: "feed://{feedUrl}",
                                   download: "",
                                 }[item];
 
@@ -355,6 +356,7 @@ function Popup() {
                                   "feedmail": "FeedMail",
                                   inoreader: "Inoreader",
                                   debug: "Debug",
+                                  feedhandler: "Feed URL",
                                   download: "Download",
                                 }[item]
                               }
