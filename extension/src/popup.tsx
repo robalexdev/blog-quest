@@ -314,12 +314,15 @@ function Popup() {
                     <div className="flex flex-wrap gap-8 px-8">
                       {(
                         [
-                          "feedly",
+                          "feedbin",
+                          "feedhandler",
                           "feedland.com",
                           "feedland.org",
+                          "feedly",
                           "feedmail",
                           "inoreader",
-                          "feedhandler",
+                          "netnewswire",
+
                           "debug",
                           "download",
                         ] as const
@@ -335,13 +338,16 @@ function Popup() {
                                 }
 
                                 feedUrlSchemeInputRef.current.value = {
-                                  feedly: "https://feedly.com/i/discover?query=suggesto%2F{feedUrl}",
+                                  feedbin: "https://feedbin.com/?subscribe={feedUrl}",
+                                  feedhandler: "feed://{feedUrl}",
                                   "feedland.com": "https://feedland.com/?feedurl={feedUrl}",
                                   "feedland.org": "https://feedland.org/?feedurl={feedUrl}",
-                                  "feedmail": "https://feedmail.org/subscriptions/new?url={feedUrl}",
+                                  feedly: "https://feedly.com/i/discover?query=suggesto%2F{feedUrl}",
+                                  feedmail: "https://feedmail.org/subscriptions/new?url={feedUrl}",
                                   inoreader: "https://www.inoreader.com/search/feeds/{feedUrl}",
+                                  netnewswire: "feed://{feedUrl}",
+
                                   debug: "http://localhost:8080/#{feedUrl}",
-                                  feedhandler: "feed://{feedUrl}",
                                   download: "",
                                 }[item];
 
@@ -350,13 +356,16 @@ function Popup() {
                             >
                               {
                                 {
-                                  feedly: "Feedly",
+                                  feedbin: "Feedbin",
+                                  feedhandler: "feed://",
                                   "feedland.com": "Feedland.com",
                                   "feedland.org": "Feedland.org",
-                                  "feedmail": "FeedMail",
+                                  feedly: "Feedly",
+                                  feedmail: "FeedMail",
                                   inoreader: "Inoreader",
+                                  netnewswire: "NetNewsWire",
+
                                   debug: "Debug",
-                                  feedhandler: "Feed URL",
                                   download: "Download",
                                 }[item]
                               }
