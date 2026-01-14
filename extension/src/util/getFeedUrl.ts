@@ -1,6 +1,4 @@
-import { Feed } from "./constants";
-import { getIsUrlHttpOrHttps } from "./getIsUrlHttpOrHttps";
-import { removeSubstring } from "./removeSubstring";
+import { Feed } from "./storage";
 
 export function getFeedUrl(
   feed: Feed,

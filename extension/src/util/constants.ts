@@ -2,14 +2,23 @@ import { z } from "zod";
 
 export type MaybePromise<T> = Promise<T> | T;
 
-export const Feed = z.object({
+export const LegacyFeed = z.object({
   type: z.literal("feed"),
   feedUrl: z.string(),
   feedTitle: z.optional(z.union([z.string(), z.undefined()])),
   favicon: z.optional(z.union([z.string(), z.undefined()])),
 });
 
-export type Feed = z.infer<typeof Feed>;
+export type LegacyFeed = z.infer<typeof LegacyFeed>;
+
+export const Website = z.object({
+  website: z.string(),
+  viewedAt: z.number(),
+  hidden: z.optional(z.union([z.boolean(), z.undefined()])),
+  favicon: z.optional(z.union([z.string(), z.undefined()])),
+});
+
+export type Website = z.infer<typeof Website>;
 
 export const Message = z.discriminatedUnion("name", [
   z.object({
@@ -31,7 +40,7 @@ export type Message = z.infer<typeof Message>;
 
 export type Target = "chrome" | "firefox" | "safari";
 
-export type FeedData = Feed;
+export type FeedData = LegacyFeed;
 
 export type NotNullNotUndefined = {};
 
@@ -43,8 +52,9 @@ export type HrefData = {
   updatedAt?: number;
   hidden?: boolean;
 };
-export type HrefDataType<T extends HrefData["feedData"]["type"]> =
-  HrefData & { feedData: Extract<FeedData, { type: T }> };
+export type HrefDataType<T extends HrefData["feedData"]["type"]> = HrefData & {
+  feedData: Extract<FeedData, { type: T }>;
+};
 
 export type HrefStore = Map<string, HrefData>;
 

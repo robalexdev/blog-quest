@@ -1,6 +1,6 @@
 import { getDataUrlFromFile } from "./getDataUrlFromFile";
-import { getFeeds } from "./getFeeds";
-import { getHrefStore } from "./storage";
+import { getAllFeeds } from "./getWebsites";
+import { db } from "./storage";
 
 function escapeXml(unsafe) {
     return unsafe.replace(/[<>&'"]/g, function (c) {
@@ -15,7 +15,7 @@ function escapeXml(unsafe) {
 }
 
 export async function exportFeeds(): Promise<void> {
-  const feeds = getFeeds(await getHrefStore());
+  const feeds = await getAllFeeds(db);
 
   let xmlDoc = document.implementation.createDocument(null, "opml");
   xmlDoc.children[0].setAttribute("version", "2.0");
@@ -29,7 +29,11 @@ export async function exportFeeds(): Promise<void> {
 
   let xmlHeadDescription = xmlDoc.createElement("description");
   xmlHead.appendChild(xmlHeadDescription);
-  xmlHeadDescription.appendChild(xmlDoc.createTextNode("These feeds were collected by the Blog Quest browser extension"));
+  xmlHeadDescription.appendChild(
+    xmlDoc.createTextNode(
+      "These feeds were collected by the Blog Quest browser extension",
+    ),
+  );
 
   let xmlBody = xmlDoc.createElement("body");
   xmlDoc.children[0].appendChild(xmlBody);
@@ -38,21 +42,20 @@ export async function exportFeeds(): Promise<void> {
     let xmlOutline = xmlDoc.createElement("outline");
     // Even when the feed is an Atom feed, "rss" appears to be the correct value
     xmlOutline.setAttribute("type", "rss");
-    xmlOutline.setAttribute("text", escapeXml(feed.feedData.feedTitle));
-    xmlOutline.setAttribute("xmlUrl", escapeXml(feed.feedHref));
+    xmlOutline.setAttribute("text", escapeXml(feed.title));
+    xmlOutline.setAttribute("xmlUrl", escapeXml(feed.feedUrl));
 
     // TODO: this really should be the website URL linked in
     // the body of the RSS feed, or perhaps the base URL of
     // the blog
     // Is there a good way to do that here?
-    xmlOutline.setAttribute("htmlUrl", escapeXml(feed.websiteUrl));
+    xmlOutline.setAttribute("htmlUrl", "https://" + escapeXml(feed.website));
 
     xmlOutline.setAttribute("category", "all");
     xmlBody.appendChild(xmlOutline);
-    console.log(feed);
   }
 
-  const xmlstr = (new XMLSerializer()).serializeToString(xmlDoc);
+  const xmlstr = new XMLSerializer().serializeToString(xmlDoc);
 
   const blob = new Blob([xmlstr], {
     type: "application/xml",

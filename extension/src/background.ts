@@ -2,7 +2,7 @@ import "webextension-polyfill";
 import { z } from "zod";
 import { Message } from "./util/constants";
 import { runMessageCallback } from "./util/messageCallbacks";
-import { getIconState } from "./util/storage";
+import { getIconState, updateDatabase } from "./util/storage";
 
 browser.runtime.onMessage.addListener(async (msg: unknown) => {
   let message: z.infer<typeof Message>;
@@ -22,6 +22,9 @@ browser.runtime.onMessage.addListener(async (msg: unknown) => {
 });
 
 browser.runtime.onInstalled.addListener((details) => {
+  console.log("Installed: ", details);
+  updateDatabase(details.previousVersion);
+
   getIconState((iconState) => {
     if (details.reason === "install") {
       return { state: "on", unreadCount: iconState.unreadCount };

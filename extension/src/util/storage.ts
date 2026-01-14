@@ -1,3 +1,4 @@
+import { Dexie, type EntityTable } from "dexie";
 import type { DeepReadonly } from "ts-essentials";
 import {
   HrefStore,
@@ -6,7 +7,9 @@ import {
   actionActive,
   actionInactive,
 } from "./constants";
-import { getFeeds } from "./getFeeds";
+import { getWebsiteName } from "./getWebsiteName";
+import { getFeeds } from "./legacyGetFeeds";
+import { sleep } from "./sleep";
 
 function storageFactory<T extends NotNullNotUndefined>(args: {
   parse(storageData: any): DeepReadonly<T>;
@@ -70,7 +73,7 @@ export const getIconState = storageFactory({
   serialize(iconState) {
     return iconState;
   },
-  onChange({ prev, curr }) {
+  onChange({ curr }) {
     /**
      * Firefox is still at manifest v2
      */
@@ -90,6 +93,7 @@ export const getIconState = storageFactory({
   },
 });
 
+// Legacy!
 export const getHrefStore = storageFactory({
   storageKey: "feed-href-data-store-3",
   parse(storageData) {
@@ -115,8 +119,7 @@ export const getHrefStore = storageFactory({
     {
       const prevHiddenFeeds = getFeeds(prev, { hidden: true });
       const currHiddenFeeds = getFeeds(curr, { hidden: true });
-      const hiddenFeedsDiff =
-        prevHiddenFeeds.length - currHiddenFeeds.length;
+      const hiddenFeedsDiff = prevHiddenFeeds.length - currHiddenFeeds.length;
 
       /**
        * Early exit if we are just moving feeds from hidden to non hidden.
@@ -146,8 +149,8 @@ export const getFeedUrlScheme = storageFactory({
   },
 });
 
-export const getHideFeedsOnClick = storageFactory({
-  storageKey: "hide-feeds-on-click-1",
+export const getHideWebsitesOnClick = storageFactory({
+  storageKey: "hide-websites-on-click-1",
   parse(storageData: boolean) {
     return storageData ?? false;
   },
@@ -156,72 +159,87 @@ export const getHideFeedsOnClick = storageFactory({
   },
 });
 
-/**
- * Test the safe storage
- */
-// {
-//   const getInc = storageFactory({
-//     storageKey: "inc2",
-//     parse(storageData) {
-//       let num: number;
-//       if (typeof storageData === "number" && !isNaN(storageData)) {
-//         num = storageData;
-//       } else {
-//         num = 0;
-//       }
-//       return num;
-//     },
-//     serialize(inc) {
-//       return inc;
-//     },
-//   });
+export interface Feed {
+  feedUrl: string; // primary key
+  website: string;
+  title: string | undefined;
+  tabUrl: string;
+  viewedAt: number;
+}
 
-//   chrome.runtime.onMessage.addListener(async () => {
-//     /**
-//      * @param {number} sleepMs
-//      * @returns {Promise<void>}
-//      */
-//     function sleep(sleepMs) {
-//       return new Promise((res) => {
-//         setTimeout(() => {
-//           res();
-//         }, sleepMs);
-//       });
-//     }
+export interface Website {
+  website: string; // primary key
+  viewedAt: number;
+  hidden: boolean | undefined;
+  favicon: string | undefined;
+}
 
-//     getInc((inc) => {
-//       console.log(inc, inc === 0);
-//       return inc + 1;
-//     });
-//     getInc((inc) => {
-//       console.log(inc, inc === 1);
-//       return inc + 1;
-//     });
-//     await getInc((inc) => {
-//       console.log(inc, inc === 2);
-//       return inc + 1;
-//     });
-//     getInc((inc) => {
-//       console.log(inc, inc === 3);
-//       return inc + 1;
-//     });
-//     console.log("sleep");
-//     await sleep(1000);
-//     console.log("wakeup");
-//     getInc((inc) => {
-//       console.log(inc, inc === 4);
-//       return inc + 1;
-//     });
-//     getInc((inc) => {
-//       console.log(inc, inc === 5);
-//       return inc + 1;
-//     });
-//     await getInc((inc) => {
-//       console.log(inc, inc === 6);
-//       return inc + 1;
-//     });
-//     getInc((inc) => {
-//       console.log(inc, inc === 7);
-//     });
-//   });
-// }
+export type BlogQuestDBType = Dexie & {
+  feeds: EntityTable<Feed, "feedUrl">;
+  websites: EntityTable<Website, "website">;
+};
+
+const db = new Dexie("BlogQuestDB") as BlogQuestDBType;
+db.version(1).stores({
+  feeds: "&feedUrl, website, viewedAt",
+  websites: "&website, hidden, viewedAt",
+});
+db.open().catch((e) => {
+  console.error("Open failed: " + e);
+});
+
+const legacyImport = async () => {
+  // Add legacy data, if any exists
+  await getHrefStore(async (hrefStore) => {
+    await db
+      .transaction("rw", db.feeds, db.websites, async () => {
+        console.log("Adding legacy data");
+        for (const old of hrefStore.values()) {
+          const website = getWebsiteName(old.websiteUrl);
+          if (!website) {
+            continue;
+          }
+          const existingWebsite = await db.websites.get(website);
+          if (existingWebsite) {
+            await db.websites.update(website, {
+              viewedAt: Math.max(old.viewedAt, existingWebsite.viewedAt),
+            });
+          } else {
+            await db.websites.add({
+              website: website,
+              viewedAt: old.viewedAt,
+              hidden: undefined,
+              favicon: old.feedData.favicon,
+            });
+          }
+
+          if (!(await db.feeds.get(old.feedHref))) {
+            await db.feeds.add({
+              feedUrl: old.feedHref,
+              website: website,
+              title: old.feedData.feedTitle,
+              tabUrl: old.websiteUrl,
+              viewedAt: old.viewedAt,
+            });
+          }
+        }
+        console.log("Legacy data added");
+      })
+      .catch((e) => {
+        console.error("Unable to import: ", e);
+      });
+  });
+};
+
+// Schema changes, migrations, etc
+const updateDatabase = async (previousVersion: string | undefined) => {
+  if (previousVersion !== undefined) {
+    const previousVersionYear = Number(previousVersion.split(".")[0]);
+    if (previousVersionYear < 2026) {
+      // 2025 versions used local storage, migrate to Dexie
+      await legacyImport();
+    }
+  }
+};
+
+export { db, updateDatabase };

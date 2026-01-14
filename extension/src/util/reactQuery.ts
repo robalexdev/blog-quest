@@ -1,19 +1,23 @@
 import { createQuery } from "react-query-kit";
-import {
-  getHideFeedsOnClick,
-  getHrefStore,
-  getFeedUrlScheme,
-} from "./storage";
-import { getFeeds } from "./getFeeds";
+import { getFeeds, getWebsites } from "./getWebsites";
+import { db, getFeedUrlScheme, getHideWebsitesOnClick } from "./storage";
 
-export const useHrefStoreQuery = createQuery({
-  queryKey: ["feeds"],
+export const useWebsiteQuery = createQuery({
+  queryKey: ["websites"],
   async fetcher() {
-    const hrefStore = await getHrefStore();
-    return {
-      feeds: getFeeds(hrefStore),
-      hiddenFeeds: getFeeds(hrefStore, { hidden: true }),
+    const result = {
+      feeds: await getWebsites(db, false),
+      hiddenFeeds: await getWebsites(db, true),
     };
+    return result;
+  },
+});
+
+type FeedsQuery = { website: string };
+export const useFeedQuery = createQuery({
+  queryKey: ["feeds"],
+  async fetcher(vars: FeedsQuery) {
+    return await getFeeds(db, vars.website);
   },
 });
 
@@ -22,7 +26,7 @@ export const useFeedUrlSchemeQuery = createQuery({
   fetcher: () => getFeedUrlScheme(),
 });
 
-export const useHideFeedsOnClickQuery = createQuery({
-  queryKey: ["hidefeedsonclick"],
-  fetcher: () => getHideFeedsOnClick(),
+export const useHideWebsitesOnClickQuery = createQuery({
+  queryKey: ["hidewebsitesonclick"],
+  fetcher: () => getHideWebsitesOnClick(),
 });

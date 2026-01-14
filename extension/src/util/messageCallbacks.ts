@@ -1,12 +1,8 @@
 import { z } from "zod";
-import {
-  Message,
-  MessageReturn,
-  Feed,
-} from "./constants";
-import { getUncachedFeedData } from "./getUncachedFeedData";
+import { Message, MessageReturn } from "./constants";
 import { getIsUrlHttpOrHttps } from "./getIsUrlHttpOrHttps";
-import { getHrefStore } from "./storage";
+import { getWebsiteName } from "./getWebsiteName";
+import { getIconState, db } from "./storage";
 
 type ArgMap = {
   [Key in Message["name"]]: Extract<Message, { name: Key }>["args"];
@@ -20,44 +16,48 @@ export const messageCallbacks: {
       return;
     }
 
-    const hasExistingHrefData = (
-      await getHrefStore((prev) => {
-        const hrefStore = new Map(prev);
-        // streetpass would expire known non-profiles here
-        // but we don't fetch the feed, so there's nothing to expire
-        return hrefStore;
-      })
-    ).has(args.feedHref);
-
-    if (hasExistingHrefData) {
-      return;
-    }
-
     //
     // Unlike Mastodon and Webfinger we can't reliably fetch RSS feed content in an extension
     // CORS can reject it
     // Instead rely on the information in the rel=alternate link
     //
 
-    const feedData = {
-      type: "feed",
-      feedTitle: args.feedTitle,
-      feedUrl: args.feedHref,
-      // tabUrl too?
-      favicon: args.faviconHref,
-    };
+    const website = getWebsiteName(args.tabUrl);
+    if (!website) {
+      console.log("Unable to get website name for: ", args.tabUrl);
+      return;
+    }
 
-    await getHrefStore((hrefStore) => {
-      const newHrefStore = new Map(hrefStore);
-      newHrefStore.set(args.feedHref, {
-        feedData: feedData,
-        viewedAt: Date.now(),
-        websiteUrl: args.tabUrl,
-        feedHref: args.feedHref,
+    await db.transaction("rw", db.feeds, db.websites, async () => {
+      if (!!(await db.feeds.get(args.feedHref))) {
+        // Already seen
+        return;
+      }
+
+      const now = Date.now();
+
+      console.log("Adding website: " + website);
+      await db.websites.upsert(website, {
+        viewedAt: now,
+        favicon: args.faviconHref,
+        // hidden: undefined or unchanged
       });
 
-      return newHrefStore;
+      console.log("Adding feed: " + args.feedHref);
+      await db.feeds.put({
+        feedUrl: args.feedHref,
+        website: website,
+        title: args.feedTitle,
+        tabUrl: args.tabUrl,
+        viewedAt: now,
+      });
+      console.log("Added");
     });
+
+    getIconState((iconState) => ({
+      state: "on",
+      unreadCount: (iconState.unreadCount ?? 0) + 1,
+    }));
   },
 };
 

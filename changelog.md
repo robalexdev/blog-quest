@@ -1,3 +1,9 @@
+# 2026.1.14 (Jan 14, 2026)
+
+- Group feeds by website
+- Migrated feeds to IndexedDB (Dexie)
+
+
 # 2025.12.2 (Dec 10, 2025)
 
 - Adding more feed reader URL templates
