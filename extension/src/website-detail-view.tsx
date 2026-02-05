@@ -9,6 +9,10 @@ import { getHrefProps } from "./util/getHrefProps";
 import { useFeedQuery, useFeedUrlSchemeQuery } from "./util/reactQuery";
 import { Feed } from "./util/storage";
 
+const button = cx(
+  "flex h-[1.68em] min-w-[1.4em] shrink-0 cursor-pointer items-center justify-center rounded-6 bg-faded p-[1em] my-[0.2em] text-16 font-medium focus-visible:outline-2",
+);
+
 export function WebsiteDetailView(props: {
   website: Website;
   clearSelectedWebsite: () => any;
@@ -56,7 +60,7 @@ export function WebsiteDetailView(props: {
 
       <button
         className={cx(
-          "absolute left-12 top-12 flex h-[1.68em] min-w-[1.4em] shrink-0 cursor-default items-center justify-center gap-8 rounded-6 bg-faded px-[0.38em] text-11 text-12 font-medium text-accent focus-visible:outline-none",
+          button, "absolute left-12 top-12"
         )}
         onClick={props.clearSelectedWebsite}
       >
@@ -87,30 +91,30 @@ function Feeds(props: { feeds: Array<Feed> | undefined }) {
                 .replace(/\s+/g, "")}
             </span>
             <div className="flex items-baseline justify-between gap-x-6 leading-[1.45]">
-              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-medium text-primaryText">
+              <span className="overflow-hidden text-[14px] font-medium text-primaryText">
                 {feedData.title}
               </span>
             </div>
             <a
               href={feedData.feedUrl}
-              className="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-medium text-secondaryText"
+              className="overflow-hidden text-ellipsis text-[13px] font-medium text-secondaryText"
               title={feedData.feedUrl}
             >
-              Feed: {feedData.feedUrl}
+              {feedData.feedUrl}
             </a>
             <a
               href={feedData.tabUrl}
-              className="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-medium text-secondaryText"
+              className={cx(button)}
               title={feedData.tabUrl}
             >
-              Webpage: {feedData.tabUrl}
+              View webpage
             </a>
             <a
               {...feedHrefProps}
-              className="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-medium text-accent"
+              className={cx(button)}
               title={feedData.feedUrl}
             >
-              subscribe
+              Subscribe
             </a>
           </div>
         </InView>

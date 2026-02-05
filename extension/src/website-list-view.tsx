@@ -26,10 +26,11 @@ import {
 
 const buttonCheckbox = cx("scale-[0.82]");
 const button = cx(
-  "flex h-[1.68em] min-w-[1.4em] shrink-0 cursor-default items-center justify-center rounded-6 bg-faded px-[0.38em] text-11 font-medium focus-visible:outline-none",
+  "flex h-[1.68em] min-w-[1.4em] shrink-0 cursor-pointer items-center justify-center rounded-6 bg-faded p-[1em] my-[0.2em] text-26 font-medium focus-visible:outline-2",
 );
 
 export function WebsiteListView(props: {
+  sniffAndroid: bool;
   setSelectedWebsite: (website: Website) => any;
 }) {
   const websiteQuery = useWebsiteQuery();
@@ -42,10 +43,11 @@ export function WebsiteListView(props: {
     <>
       <div className="flex flex-col items-center pt-[12px]">
         <img src="/icon-128.png" width="36" height="36" />
-
-        <h1 className="text-14 font-medium leading-[1.21] text-primaryText">
-          Blog Quest
-        </h1>
+        { !props.sniffAndroid && (
+          <h1 className="text-14 font-medium leading-[1.21] text-primaryText">
+            Blog Quest
+          </h1>
+        )}
       </div>
       <div className="flex grow flex-col gap-[18px] px-12 py-[18px]">
         <Websites
@@ -128,7 +130,7 @@ export function WebsiteListView(props: {
         >
           <button
             type="button"
-            className={cx(button, "text-secondaryText")}
+            className={cx(button, "text-14 text-secondaryText")}
             onClick={(ev) => {
               const formElements = ev.currentTarget.form?.elements;
               if (!formElements) {
@@ -145,13 +147,13 @@ export function WebsiteListView(props: {
             Hide All
           </button>
 
-          <button className={cx(button, "text-accent")}>Save</button>
+          <button className={cx(button, "text-14 text-accent")}>Save</button>
         </form>
       </div>
 
       <div className="absolute right-12 top-12 flex gap-8" hidden={hideFeeds}>
         {!!websiteQuery.data?.feeds.length && (
-          <span className={cx(button, "text-accent")}>
+          <span className={cx(button, "text-accent text-14")}>
             {websiteQuery.data?.feeds.length}
           </span>
         )}
@@ -159,7 +161,7 @@ export function WebsiteListView(props: {
         <Popover.Root modal>
           <Popover.Close hidden ref={popoverCloseRef} />
 
-          <Popover.Trigger className={cx(button, "text-accent")}>
+          <Popover.Trigger className={cx(button, "text-accent text-14")}>
             <svg
               fill="currentColor"
               className="size-[1em]"
@@ -471,7 +473,7 @@ function Websites(props: {
             onClick={() => websiteClickHandler(props.hideWebsites)}
           >
             <div className="flex items-baseline justify-between gap-x-6 leading-[1.45]">
-              <div className="text overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-medium">
+              <div className="text overflow-hidden text-ellipsis whitespace-nowrap text-[16px] font-medium">
                 {feedDisplayName}
               </div>
             </div>
@@ -490,7 +492,7 @@ function Websites(props: {
             )}
           </div>
           {props.hideWebsites && (
-            <label className={cx(button, "ml-8 text-accent")}>
+            <label className={cx(button, "ml-8 text-14 text-accent")}>
               Hide&nbsp;
               <input
                 name={websiteData.website}

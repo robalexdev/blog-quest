@@ -15,18 +15,38 @@ export const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: Infinity } },
 });
 
+const sniffAndroid = /\bMobile\b/.test(navigator.userAgent);
 function Popup() {
   const [selectedWebsite, setSelectedWebsite] = React.useState<Website>();
+  const [isAndroid, setIsAndroid] = React.useState(sniffAndroid);
+
+  React.useLayoutEffect(async () => {
+    if (chrome.runtime.getPlatformInfo) {
+      chrome.runtime.getPlatformInfo((info) => {
+        if (info && info.os == "android" && !isAndroid) {
+          setIsAndroid(true);
+        }
+      });
+    }
+  }, []);
+
+  let sizing = " h-[600px] w-[350px] ";
+  if (isAndroid) {
+    sizing = " h-screen w-screen ";
+  }
 
   return (
-    <div className="relative flex h-[600px] w-[350px] flex-col overflow-auto bg-primaryBg">
+    <div className={`relative flex ${sizing} flex-col overflow-auto bg-primaryBg`}>
       {!!selectedWebsite ? (
         <WebsiteDetailView
           website={selectedWebsite}
           clearSelectedWebsite={() => setSelectedWebsite(undefined)}
         />
       ) : (
-        <WebsiteListView setSelectedWebsite={setSelectedWebsite} />
+        <WebsiteListView
+          sniffAndroid={sniffAndroid}
+          setSelectedWebsite={setSelectedWebsite}
+        />
       )}
     </div>
   );
