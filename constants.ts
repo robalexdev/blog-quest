@@ -1,4 +1,4 @@
-export const VERSION = "2026.2.4"
+export const VERSION = "2026.2.5"
 
 export const downloadLink = {
   chrome:

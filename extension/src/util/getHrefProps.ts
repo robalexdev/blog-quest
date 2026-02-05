@@ -10,23 +10,18 @@ export function getHrefProps(
     async onClick(ev) {
       ev.preventDefault();
       const { metaKey } = ev;
-
       const href = (await getActualHref?.()) ?? baseHref;
       if (getIsUrlHttpOrHttps(href)) {
-        await browser.tabs.create({
-          url: href,
-          active: !metaKey,
-        });
-
+        browser.runtime.sendMessage({
+          name: "OPEN_TAB",
+          args: {
+            url: href,
+            metaKey: metaKey,
+          }
+        })
         if (!metaKey) {
           window.close();
         }
-      } else {
-        await browser.tabs.update({
-          url: href,
-        });
-
-        window.close();
       }
     },
   };

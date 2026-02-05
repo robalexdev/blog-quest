@@ -96,14 +96,14 @@ function Feeds(props: { feeds: Array<Feed> | undefined }) {
               </span>
             </div>
             <a
-              href={feedData.feedUrl}
+              {...getHrefProps(feedData.feedUrl)}
               className="overflow-hidden text-ellipsis text-[13px] font-medium text-secondaryText"
               title={feedData.feedUrl}
             >
               {feedData.feedUrl}
             </a>
             <a
-              href={feedData.tabUrl}
+              {...getHrefProps(feedData.tabUrl)}
               className={cx(button)}
               title={feedData.tabUrl}
             >

@@ -11,6 +11,15 @@ type ArgMap = {
 export const messageCallbacks: {
   [K in keyof ArgMap]: (value: ArgMap[K]) => z.infer<(typeof MessageReturn)[K]>;
 } = {
+  async OPEN_TAB(args) {
+    if (!getIsUrlHttpOrHttps(args.url)) {
+      return;
+    }
+    return browser.tabs.create({
+      url: args.url,
+      active: !args.metaKey,
+    });
+  },
   async HREF_PAYLOAD(args) {
     if (!getIsUrlHttpOrHttps(args.feedHref)) {
       return;

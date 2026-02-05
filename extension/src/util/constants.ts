@@ -30,10 +30,18 @@ export const Message = z.discriminatedUnion("name", [
       tabUrl: z.string(),
     }),
   }),
+  z.object({
+    name: z.literal("OPEN_TAB"),
+    args: z.object({
+      url: z.string(),
+      metaKey: z.boolean(),
+    }),
+  }),
 ]);
 
 export const MessageReturn = {
   HREF_PAYLOAD: z.void(),
+  OPEN_TAB: z.void(),
 } satisfies Record<Message["name"], unknown>;
 
 export type Message = z.infer<typeof Message>;

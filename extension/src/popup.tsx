@@ -20,14 +20,17 @@ function Popup() {
   const [selectedWebsite, setSelectedWebsite] = React.useState<Website>();
   const [isAndroid, setIsAndroid] = React.useState(sniffAndroid);
 
-  React.useLayoutEffect(async () => {
-    if (chrome.runtime.getPlatformInfo) {
-      chrome.runtime.getPlatformInfo((info) => {
-        if (info && info.os == "android" && !isAndroid) {
-          setIsAndroid(true);
-        }
-      });
+  React.useEffect(() => {
+    const cb = async () => {
+      if (chrome.runtime.getPlatformInfo) {
+        chrome.runtime.getPlatformInfo((info) => {
+          if (info && info.os == "android" && !sniffAndroid) {
+            setIsAndroid(true);
+          }
+        });
+      }
     }
+    cb().catch(console.error);
   }, []);
 
   let sizing = " h-[600px] w-[350px] ";
