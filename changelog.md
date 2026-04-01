@@ -1,3 +1,9 @@
+# 2026.4.1 (April 1, 2026)
+
+- Trigger download when exporting OPML on Android (#14)
+- Remove console logging in content script (sorry)
+
+
 # 2026.1.14 (Jan 14, 2026)
 
 - Group feeds by website

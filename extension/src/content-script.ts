@@ -58,8 +58,6 @@ function processFeed(feed, iconHref) {
       },
     };
     browser.runtime.sendMessage(message);
-    console.log('RSS content script');
-    console.log(message);
   }
 }
 

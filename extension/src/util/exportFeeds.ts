@@ -2,6 +2,16 @@ import { getDataUrlFromFile } from "./getDataUrlFromFile";
 import { getAllFeeds } from "./getWebsites";
 import { db } from "./storage";
 
+async function asDataUrl(blob: Blob): string {
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(reader.result as string);
+    reader.onerror = e => reject(reader.error);
+    reader.onabort = e => reject(new Error("Read aborted"));
+    reader.readAsDataURL(blob);
+  });
+}
+
 function escapeXml(unsafe) {
     return unsafe.replace(/[<>&'"]/g, function (c) {
         switch (c) {
@@ -61,17 +71,9 @@ export async function exportFeeds(): Promise<void> {
     type: "application/xml",
   });
 
-  browser.tabs.create({
-    url:
-      /**
-       * Chrome needs to use this method, because otherwise the blob isn't
-       * recognized as a JSON file and won't allow downloading via command + s.
-       * the opened tab will have a url blob:chrome-extension instead of data:application/json
-       */
-      __TARGET__ === "chrome"
-        ? await getDataUrlFromFile(blob)
-        : URL.createObjectURL(blob),
-  });
-
-  window.close();
+  const dataUrl = await asDataUrl(blob);
+  const aElem = document.createElement("a");
+  aElem.setAttribute("href", dataUrl);
+  aElem.setAttribute("download", "blog-quest-export.opml");
+  aElem.click();
 }
