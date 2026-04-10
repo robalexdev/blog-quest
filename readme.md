@@ -1,3 +1,7 @@
+> [!CAUTION]
+> [This project has moved to GitLab](https://gitlab.com/robalexdev/blog-quest)
+
+
 [Download for Chrome](https://chromewebstore.google.com/detail/blog-quest/ghmfhadmoephkndjiahchiobgclmkkpi)
 
 [Download for Firefox](https://addons.mozilla.org/en-US/firefox/addon/blog-quest/)
